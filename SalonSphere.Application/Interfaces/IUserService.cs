@@ -8,5 +8,6 @@ namespace SalonSphere.Application.Interfaces
     {
         Task<ApiResponse<UserProfileDto?>> GetMyProfileAsync(int userId);
         Task<ApiResponse<UserProfileDto?>> UpdateMyProfileAsync(int userId,UpdateUserProfileDto request);
+        Task<ApiResponse<UserProfileDto?>> UpdateProfileImageAsync(int userId,byte[] imageBytes,string extension);
     }
 }
