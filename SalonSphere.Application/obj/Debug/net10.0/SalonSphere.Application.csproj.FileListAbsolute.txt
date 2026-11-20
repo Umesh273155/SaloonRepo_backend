@@ -1,0 +1,15 @@
+F:\SalonSphere\backend\SalonSphere.Application\bin\Debug\net10.0\SalonSphere.Application.deps.json
+F:\SalonSphere\backend\SalonSphere.Application\bin\Debug\net10.0\SalonSphere.Application.dll
+F:\SalonSphere\backend\SalonSphere.Application\bin\Debug\net10.0\SalonSphere.Application.pdb
+F:\SalonSphere\backend\SalonSphere.Application\bin\Debug\net10.0\SalonSphere.Core.dll
+F:\SalonSphere\backend\SalonSphere.Application\bin\Debug\net10.0\SalonSphere.Core.pdb
+F:\SalonSphere\backend\SalonSphere.Application\obj\Debug\net10.0\SalonSphere.Application.csproj.AssemblyReference.cache
+F:\SalonSphere\backend\SalonSphere.Application\obj\Debug\net10.0\SalonSphere.Application.GeneratedMSBuildEditorConfig.editorconfig
+F:\SalonSphere\backend\SalonSphere.Application\obj\Debug\net10.0\SalonSphere.Application.AssemblyInfoInputs.cache
+F:\SalonSphere\backend\SalonSphere.Application\obj\Debug\net10.0\SalonSphere.Application.AssemblyInfo.cs
+F:\SalonSphere\backend\SalonSphere.Application\obj\Debug\net10.0\SalonSphere.Application.csproj.CoreCompileInputs.cache
+F:\SalonSphere\backend\SalonSphere.Application\obj\Debug\net10.0\SalonSph.FCF95D5B.Up2Date
+F:\SalonSphere\backend\SalonSphere.Application\obj\Debug\net10.0\SalonSphere.Application.dll
+F:\SalonSphere\backend\SalonSphere.Application\obj\Debug\net10.0\refint\SalonSphere.Application.dll
+F:\SalonSphere\backend\SalonSphere.Application\obj\Debug\net10.0\SalonSphere.Application.pdb
+F:\SalonSphere\backend\SalonSphere.Application\obj\Debug\net10.0\ref\SalonSphere.Application.dll

@@ -1,0 +1,12 @@
+F:\SalonSphere\backend\SalonSphere.Core\bin\Debug\net10.0\SalonSphere.Core.deps.json
+F:\SalonSphere\backend\SalonSphere.Core\bin\Debug\net10.0\SalonSphere.Core.dll
+F:\SalonSphere\backend\SalonSphere.Core\bin\Debug\net10.0\SalonSphere.Core.pdb
+F:\SalonSphere\backend\SalonSphere.Core\obj\Debug\net10.0\SalonSphere.Core.GeneratedMSBuildEditorConfig.editorconfig
+F:\SalonSphere\backend\SalonSphere.Core\obj\Debug\net10.0\SalonSphere.Core.AssemblyInfoInputs.cache
+F:\SalonSphere\backend\SalonSphere.Core\obj\Debug\net10.0\SalonSphere.Core.AssemblyInfo.cs
+F:\SalonSphere\backend\SalonSphere.Core\obj\Debug\net10.0\SalonSphere.Core.csproj.CoreCompileInputs.cache
+F:\SalonSphere\backend\SalonSphere.Core\obj\Debug\net10.0\SalonSphere.Core.dll
+F:\SalonSphere\backend\SalonSphere.Core\obj\Debug\net10.0\refint\SalonSphere.Core.dll
+F:\SalonSphere\backend\SalonSphere.Core\obj\Debug\net10.0\SalonSphere.Core.pdb
+F:\SalonSphere\backend\SalonSphere.Core\obj\Debug\net10.0\ref\SalonSphere.Core.dll
+F:\SalonSphere\backend\SalonSphere.Core\obj\Debug\net10.0\SalonSph.3C896594.Up2Date
