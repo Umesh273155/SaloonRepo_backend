@@ -130,9 +130,9 @@ namespace SalonSphere.Infrastructure.Services
                 var oldFileName = Path.GetFileName(oldImage);
                 var oldFilePath = Path.Combine(folderPath, oldFileName);
 
-                if (System.IO.File.Exists(oldFilePath))
+                if (File.Exists(oldFilePath))
                 {
-                    System.IO.File.Delete(oldFilePath);
+                    File.Delete(oldFilePath);
                 }
             }
 
