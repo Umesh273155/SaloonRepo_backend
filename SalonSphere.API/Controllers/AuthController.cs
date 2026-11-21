@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SalonSphere.Application.DTOs;
 using SalonSphere.Application.Interfaces;
-using SalonSphere.Infrastructure.Services;
 using System.Security.Claims;
 
 namespace SalonSphere.API.Controllers;

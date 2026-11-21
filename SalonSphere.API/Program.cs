@@ -23,14 +23,19 @@ builder.Services.AddOpenApi();
 
 // Infrastructure and Database
 builder.Services.AddInfrastructure(builder.Configuration);
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
+
 // Email Configuration
-builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
-builder.Services.Configure<EmailOtpSettings>(builder.Configuration.GetSection("OtpSettings"));
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("EmailSettings"));
+
+builder.Services.Configure<EmailOtpSettings>(
+    builder.Configuration.GetSection("OtpSettings"));
+
 // Email Service
 builder.Services.AddScoped<IEmailService, EmailService>();
-
 
 // JWT Authentication
 builder.Services
@@ -47,14 +52,24 @@ builder.Services
             ValidIssuer = jwtSettings["Issuer"],
             ValidAudience = jwtSettings["Audience"],
 
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(jwtKey)),
 
             ClockSkew = TimeSpan.Zero
         };
     });
 
-
-
+// CORS Configuration
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:4200")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 // Authorization
 builder.Services.AddAuthorization();
@@ -69,10 +84,19 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Static Files
+app.UseStaticFiles();
+
+// IMPORTANT: CORS must run before Authentication and Authorization
+app.UseCors("AllowAngular");
+
+// Authentication
 app.UseAuthentication();
+
+// Authorization
 app.UseAuthorization();
 
+// Controllers
 app.MapControllers();
-app.UseStaticFiles();
 
 app.Run();
