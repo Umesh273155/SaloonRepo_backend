@@ -28,6 +28,12 @@
   <ItemGroup>
     <Folder Include="Repositories\" />
   </ItemGroup>
+<ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+</ItemGroup>
+<ItemGroup>
+  <PackageReference Include="MailKit" Version="5.0.0" />
+</ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SalonSphere.Core\SalonSphere.Core.csproj" />

@@ -37,5 +37,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .WithMany(x => x.Users)
             .HasForeignKey(x => x.RoleId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Property(x => x.IsEmailVerified)
+            .HasDefaultValue(false)
+            .IsRequired();
+
     }
 }

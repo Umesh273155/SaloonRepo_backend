@@ -17,7 +17,7 @@ namespace SalonSphere.Infrastructure.Data
         public DbSet<Salon> Salons => Set<Salon>();
 
         public DbSet<Role> Roles => Set<Role>();
-
+        public DbSet<EmailOtp> EmailOtps => Set<EmailOtp>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

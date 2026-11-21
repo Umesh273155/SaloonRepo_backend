@@ -13,7 +13,7 @@ namespace SalonSphere.Core.Entities
         public string? ProfileImage { get; set; }
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
+        public bool IsEmailVerified { get; set; } = false;
         // Navigation Properties
         public Salon? Salon { get; set; }
         public Role Role { get; set; } = null!;

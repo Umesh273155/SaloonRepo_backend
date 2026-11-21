@@ -1,6 +1,7 @@
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using SalonSphere.Application.DTOs;
 using SalonSphere.Application.Interfaces;
 using SalonSphere.Infrastructure;
 using SalonSphere.Infrastructure.Services;
@@ -24,6 +25,12 @@ builder.Services.AddOpenApi();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
+// Email Configuration
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.Configure<EmailOtpSettings>(builder.Configuration.GetSection("OtpSettings"));
+// Email Service
+builder.Services.AddScoped<IEmailService, EmailService>();
+
 
 // JWT Authentication
 builder.Services
@@ -45,6 +52,9 @@ builder.Services
             ClockSkew = TimeSpan.Zero
         };
     });
+
+
+
 
 // Authorization
 builder.Services.AddAuthorization();

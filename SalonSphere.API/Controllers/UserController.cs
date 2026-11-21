@@ -1,7 +1,6 @@
 ﻿
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using SalonSphere.Application.DTOs;
 using SalonSphere.Application.Interfaces;
 using System.Security.Claims;
@@ -14,9 +13,11 @@ namespace SalonSphere.API.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
-        public UserController(IUserService userService)
+        private readonly IConfiguration _config;
+        public UserController(IUserService userService, IConfiguration config)
         {
             _userService = userService;
+            _config = config;
         }
 
         [HttpGet("profile")]
@@ -33,9 +34,16 @@ namespace SalonSphere.API.Controllers
                 });
             }
             var response = await _userService.GetMyProfileAsync(userId);
+            
             if (!response.Success)
             {
                 return NotFound(response);
+            }
+
+            var baseUrl = _config["AppSettings:BaseUrl"]?.TrimEnd('/');
+            if (!string.IsNullOrEmpty(response.Data?.ProfileImage))
+            {
+                response.Data.ProfileImage = $"{baseUrl}{response.Data.ProfileImage}";
             }
             return Ok(response);
         }
@@ -53,22 +61,60 @@ namespace SalonSphere.API.Controllers
                     Data = (object?)null
                 });
             }
-
+          
             var response = await _userService.UpdateMyProfileAsync(userId, request);
-
+           
             if (!response.Success)
             {
                 return NotFound(response);
             }
-
+          
             return Ok(response);
         }
 
 
         [HttpPost("profile/photo")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> UpdateProfilePhoto([FromForm] IFormFile? file)
+        public async Task<IActionResult> UpdateProfilePhoto([FromForm(Name = "file")] IFormFile? file)
         {
+            var form = await Request.ReadFormAsync();
+
+            Console.WriteLine($"Form Files Count: {form.Files.Count}");
+
+            foreach (var uploadedFile in form.Files)
+            {
+                Console.WriteLine($"Key: {uploadedFile.Name}");
+                Console.WriteLine($"File: {uploadedFile.FileName}");
+                Console.WriteLine($"Length: {uploadedFile.Length}");
+            }
+
+            Console.WriteLine($"Parameter Null: {file == null}");
+            Console.WriteLine($"Parameter Length: {file?.Length ?? 0}");
+            if (file == null || file.Length == 0)
+            {
+                file = Request.Form.Files.GetFile("file");
+            }
+
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest(new
+                {
+                    Success = false,
+                    Message = "Please select an image."
+                });
+            }
+
+
+
+            if (Request.HasFormContentType)
+            {
+                foreach (var item in Request.Form.Files)
+                {
+                    Console.WriteLine($"File Name: {item.FileName}");
+                    Console.WriteLine($"File Length: {item.Length}");
+                }
+            }
+
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(userIdClaim, out int userId))
             {

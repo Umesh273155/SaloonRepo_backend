@@ -19,6 +19,43 @@ namespace SalonSphere.Infrastructure.Migrations
                 .HasAnnotation("ProductVersion", "10.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
+            modelBuilder.Entity("SalonSphere.Core.Entities.EmailOtp", b =>
+                {
+                    b.Property<int>("EmailOtpId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("Attempts")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsUsed")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("OtpHash")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("EmailOtpId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("EmailOtps");
+                });
+
             modelBuilder.Entity("SalonSphere.Core.Entities.Role", b =>
                 {
                     b.Property<int>("RoleId")
@@ -142,6 +179,11 @@ namespace SalonSphere.Infrastructure.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<bool>("IsEmailVerified")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false);
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasMaxLength(500)
@@ -170,6 +212,17 @@ namespace SalonSphere.Infrastructure.Migrations
                     b.HasIndex("SalonId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("SalonSphere.Core.Entities.EmailOtp", b =>
+                {
+                    b.HasOne("SalonSphere.Core.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SalonSphere.Core.Entities.User", b =>
