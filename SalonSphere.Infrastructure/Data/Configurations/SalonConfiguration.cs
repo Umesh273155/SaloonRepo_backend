@@ -25,6 +25,7 @@ namespace SalonSphere.Infrastructure.Data.Configurations
             builder.Property(x => x.State).HasMaxLength(100);
 
             builder.Property(x => x.Pincode).HasMaxLength(10);
+            builder.Property(x => x.LogoUrl).HasMaxLength(500);
         }
     }
 }

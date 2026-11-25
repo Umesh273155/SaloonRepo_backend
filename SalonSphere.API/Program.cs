@@ -26,13 +26,13 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ISalonService, SalonService>();
+
 
 // Email Configuration
-builder.Services.Configure<EmailSettings>(
-    builder.Configuration.GetSection("EmailSettings"));
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
-builder.Services.Configure<EmailOtpSettings>(
-    builder.Configuration.GetSection("OtpSettings"));
+builder.Services.Configure<EmailOtpSettings>(builder.Configuration.GetSection("OtpSettings"));
 
 // Email Service
 builder.Services.AddScoped<IEmailService, EmailService>();

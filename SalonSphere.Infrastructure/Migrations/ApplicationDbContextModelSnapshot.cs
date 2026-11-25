@@ -56,6 +56,39 @@ namespace SalonSphere.Infrastructure.Migrations
                     b.ToTable("EmailOtps");
                 });
 
+            modelBuilder.Entity("SalonSphere.Core.Entities.PasswordResetToken", b =>
+                {
+                    b.Property<int>("PasswordResetTokenId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PasswordResetTokenId");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("UserId", "IsUsed");
+
+                    b.ToTable("PasswordResetTokens");
+                });
+
             modelBuilder.Entity("SalonSphere.Core.Entities.Role", b =>
                 {
                     b.Property<int>("RoleId")
@@ -134,6 +167,10 @@ namespace SalonSphere.Infrastructure.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<string>("LogoUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -148,9 +185,16 @@ namespace SalonSphere.Infrastructure.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
 
+                    b.Property<string>("SalonType")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("State")
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
+
+                    b.Property<string>("Website")
+                        .HasColumnType("longtext");
 
                     b.HasKey("SalonId");
 
@@ -215,6 +259,17 @@ namespace SalonSphere.Infrastructure.Migrations
                 });
 
             modelBuilder.Entity("SalonSphere.Core.Entities.EmailOtp", b =>
+                {
+                    b.HasOne("SalonSphere.Core.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SalonSphere.Core.Entities.PasswordResetToken", b =>
                 {
                     b.HasOne("SalonSphere.Core.Entities.User", "User")
                         .WithMany()

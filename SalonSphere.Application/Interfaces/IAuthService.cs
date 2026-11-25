@@ -14,5 +14,8 @@ namespace SalonSphere.Application.Interfaces
         Task<ApiResponse<object?>> ResendOtpAsync(ResendOtpReqDto request);
 
 
+        Task<ApiResponse<object?>> ForgotPasswordAsync(ForgotPasswordReqDto request);
+
+        Task<ApiResponse<object?>> ResetPasswordAsync(ResetPasswordReqDto request);
     }
 }

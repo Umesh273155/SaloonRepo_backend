@@ -231,6 +231,129 @@ namespace SalonSphere.Infrastructure.Services
             };
         }
 
+
+
+        public async Task<ApiResponse<object?>> ForgotPasswordAsync(ForgotPasswordReqDto request)
+        {
+            string email = request.Email.Trim().ToLowerInvariant();
+
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
+
+            // Do not reveal whether the email exists
+            if (user == null)
+            {
+                return new ApiResponse<object?>
+                {
+                    Success = true,
+                    Message = "If your email is registered, a password reset link will be sent.",
+                    Data = null
+                };
+            }
+
+            // Invalidate previous active reset tokens
+            var previousTokens = await _context.PasswordResetTokens.Where(x => x.UserId == user.UserId && !x.IsUsed).ToListAsync();
+
+            foreach (var previous in previousTokens)
+            {
+                previous.IsUsed = true;
+            }
+
+            // Generate a secure random token
+            string token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)).Replace("+", "-").Replace("/", "_").TrimEnd('=');
+
+            // Store only SHA256 hash in database
+            string tokenHash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(token)));
+
+            var resetToken = new PasswordResetToken
+            {
+                UserId = user.UserId,
+                TokenHash = tokenHash,
+                ExpiresAt = DateTime.UtcNow.AddMinutes(15),
+                IsUsed = false,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.PasswordResetTokens.Add(resetToken);
+
+            await _context.SaveChangesAsync();
+
+            // Read frontend URL from configuration
+            string frontendUrl = _config["AppSettings:FrontendBaseUrl"] ?? throw new InvalidOperationException("Frontend:BaseUrl is not configured.");
+
+            string resetLink = $"{frontendUrl.TrimEnd('/')}/reset-password?token={Uri.EscapeDataString(token)}";
+
+            string safeName = WebUtility.HtmlEncode(user.FullName);
+
+            string htmlMessage = $@"
+                                    <div style='font-family:Arial;padding:20px;'>
+                                        <h2>SalonSphere - Password Reset</h2>
+                                        <p>Hello {safeName},</p>
+                                        <p>Click the button below to reset your password.</p>
+                                        <a href='{resetLink}'
+                                           style='background:#7c3aed;color:white;padding:12px 20px;
+                                                  text-decoration:none;border-radius:5px;'>
+                                            Reset Password
+                                        </a>
+                                        <p>This link expires in 15 minutes.</p>
+                                        <p>If you did not request this, please ignore this email.</p>
+                                    </div>";
+
+            await _emailService.SendEmailAsync(user.Email,"SalonSphere - Password Reset",htmlMessage);
+
+            return new ApiResponse<object?>
+            {
+                Success = true,
+                Message = "If your email is registered, a password reset link will be sent.",
+                Data = null
+            };
+        }
+
+
+        public async Task<ApiResponse<object?>> ResetPasswordAsync(ResetPasswordReqDto request)
+        {
+            string tokenHash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(request.Token)));
+
+            var resetToken = await _context.PasswordResetTokens.Include(x => x.User).FirstOrDefaultAsync(x => x.TokenHash == tokenHash);
+
+            if (resetToken == null || resetToken.IsUsed ||resetToken.ExpiresAt <= DateTime.UtcNow)
+            {
+                return new ApiResponse<object?>
+                {
+                    Success = false,
+                    Message = "Invalid or expired password reset link.",
+                    Data = null
+                };
+            }
+
+            // Update password using existing PBKDF2 helper
+            resetToken.User.PasswordHash = HashPassword(request.NewPassword);
+
+            // Mark token as used
+            resetToken.IsUsed = true;
+
+            // Invalidate any other active reset tokens
+            var otherTokens = await _context.PasswordResetTokens
+                .Where(x => x.UserId == resetToken.UserId && !x.IsUsed && x.PasswordResetTokenId != resetToken.PasswordResetTokenId).ToListAsync();
+
+            foreach (var item in otherTokens)
+            {
+                item.IsUsed = true;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return new ApiResponse<object?>
+            {
+                Success = true,
+                Message = "Password reset successfully.",
+                Data = null
+            };
+        }
+
+
+
+
+
         // ==========================================
         // CHANGE PASSWORD
         // ==========================================

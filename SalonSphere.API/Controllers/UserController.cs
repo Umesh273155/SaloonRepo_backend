@@ -174,6 +174,32 @@ namespace SalonSphere.API.Controllers
             return Ok(response);
         }
 
+
+
+        [HttpDelete("profile/photo")]
+        public async Task<IActionResult> RemoveProfilePhoto()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized(new
+                {
+                    Success = false,
+                    Message = "Invalid user authentication.",
+                    Data = (object?)null
+                });
+            }
+            var response = await _userService.RemoveProfileImageAsync(userId);
+            if (!response.Success)
+            {
+                return NotFound(response);
+            }
+
+            return Ok(response);
+        }
+
+ 
+
         private static bool IsValidImage(byte[] bytes, string extension)
         {
             if (extension == ".jpg" || extension == ".jpeg")
@@ -203,7 +229,6 @@ namespace SalonSphere.API.Controllers
                        System.Text.Encoding.ASCII.GetString(bytes, 0, 4) == "RIFF" &&
                        System.Text.Encoding.ASCII.GetString(bytes, 8, 4) == "WEBP";
             }
-
             return false;
         }
 

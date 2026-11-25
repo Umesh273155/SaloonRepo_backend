@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SalonSphere.Application.DTOs;
 using SalonSphere.Application.Interfaces;
 using System.Security.Claims;
@@ -44,6 +45,35 @@ public class AuthController : ControllerBase
 
         return Ok(response);
     }
+
+
+    // POST: api/auth/forgot-password
+    [AllowAnonymous]
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordReqDto request)
+    {
+        var response = await _authService.ForgotPasswordAsync(request);
+
+        if (!response.Success)
+            return BadRequest(response);
+
+        return Ok(response);
+    }
+
+    // POST: api/auth/reset-password
+    [AllowAnonymous]
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordReqDto request)
+    {
+        var response = await _authService.ResetPasswordAsync(request);
+
+        if (!response.Success)
+            return BadRequest(response);
+
+        return Ok(response);
+    }
+
+
 
     [HttpPost("change-password")]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordReqDto request)

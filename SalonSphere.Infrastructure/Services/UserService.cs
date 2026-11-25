@@ -155,5 +155,68 @@ namespace SalonSphere.Infrastructure.Services
                 Data = profile
             };
         }
+
+        public async Task<ApiResponse<UserProfileDto?>> RemoveProfileImageAsync(int userId)
+        {
+            var user = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.UserId == userId);
+
+            if (user == null)
+            {
+                return new ApiResponse<UserProfileDto?>
+                {
+                    Success = false,
+                    Message = "User profile not found.",
+                    Data = null
+                };
+            }
+
+            var oldImage = user.ProfileImage;
+
+            // Remove profile image path from database
+            user.ProfileImage = null;
+
+            await _context.SaveChangesAsync();
+
+            // Delete old image from uploads folder
+            if (!string.IsNullOrWhiteSpace(oldImage))
+            {
+                var webRootPath = _environment.WebRootPath?? Path.Combine(_environment.ContentRootPath, "wwwroot");
+                var folderPath = Path.Combine(webRootPath, "uploads");
+                // Handle both relative and full image URLs
+                var imageFileName = Path.GetFileName(Uri.TryCreate(oldImage, UriKind.Absolute, out var uri)
+                        ? uri.LocalPath: oldImage);
+                var oldFilePath = Path.Combine(folderPath, imageFileName);
+
+                Console.WriteLine($"Deleting Image: {oldFilePath}");
+
+                if (File.Exists(oldFilePath))
+                {
+                    File.Delete(oldFilePath);
+                    Console.WriteLine("Image deleted successfully.");
+                }
+                else
+                {
+                    Console.WriteLine("Image file not found at this location.");
+                }
+            }
+
+            var profile = new UserProfileDto
+            {
+                UserId = user.UserId,
+                SalonId = user.SalonId,
+                FullName = user.FullName,
+                Email = user.Email,
+                Phone = user.Phone,
+                ProfileImage = user.ProfileImage,
+                Role = user.Role?.RoleName ?? string.Empty
+            };
+
+            return new ApiResponse<UserProfileDto?>
+            {
+                Success = true,
+                Message = "Profile image removed successfully.",
+                Data = profile
+            };
+        }
     }
 }
