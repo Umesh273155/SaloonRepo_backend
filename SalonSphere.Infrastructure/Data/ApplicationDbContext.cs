@@ -19,6 +19,7 @@ namespace SalonSphere.Infrastructure.Data
         public DbSet<Role> Roles => Set<Role>();
         public DbSet<EmailOtp> EmailOtps => Set<EmailOtp>();
         public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
+        public DbSet<SalonBusinessHour> SalonBusinessHours { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -201,6 +201,35 @@ namespace SalonSphere.Infrastructure.Migrations
                     b.ToTable("Salons");
                 });
 
+            modelBuilder.Entity("SalonSphere.Core.Entities.SalonBusinessHour", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<TimeSpan>("CloseTime")
+                        .HasColumnType("time(6)");
+
+                    b.Property<string>("Day")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("IsOpen")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<TimeSpan>("OpenTime")
+                        .HasColumnType("time(6)");
+
+                    b.Property<int>("SalonId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SalonId");
+
+                    b.ToTable("SalonBusinessHours");
+                });
+
             modelBuilder.Entity("SalonSphere.Core.Entities.User", b =>
                 {
                     b.Property<int>("UserId")
@@ -280,6 +309,17 @@ namespace SalonSphere.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("SalonSphere.Core.Entities.SalonBusinessHour", b =>
+                {
+                    b.HasOne("SalonSphere.Core.Entities.Salon", "Salon")
+                        .WithMany("BusinessHours")
+                        .HasForeignKey("SalonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Salon");
+                });
+
             modelBuilder.Entity("SalonSphere.Core.Entities.User", b =>
                 {
                     b.HasOne("SalonSphere.Core.Entities.Role", "Role")
@@ -305,6 +345,8 @@ namespace SalonSphere.Infrastructure.Migrations
 
             modelBuilder.Entity("SalonSphere.Core.Entities.Salon", b =>
                 {
+                    b.Navigation("BusinessHours");
+
                     b.Navigation("Users");
                 });
 #pragma warning restore 612, 618

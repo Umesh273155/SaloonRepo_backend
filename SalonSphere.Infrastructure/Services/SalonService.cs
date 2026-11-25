@@ -1,18 +1,207 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SalonSphere.Application.DTOs;
 using SalonSphere.Application.Interfaces;
+using SalonSphere.Core.Entities;
 using SalonSphere.Infrastructure.Data;
+using System.Globalization;
 
 namespace SalonSphere.Infrastructure.Services
 {
-    public class SalonService:ISalonService
+    public class SalonService : ISalonService
     {
         private readonly ApplicationDbContext _context;
+        private static readonly string[] Days = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
 
         public SalonService(ApplicationDbContext context)
         {
             _context = context;
         }
+
+        public async Task<ApiResponse<List<BusinessHoursDto>>> GetBusinessHoursAsync(int userId)
+        {
+            var user = await _context.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.UserId == userId);
+
+            if (user == null)
+            {
+                return new ApiResponse<List<BusinessHoursDto>>
+                {
+                    Success = false,
+                    Message = "User not found.",
+                    Data = null
+                };
+            }
+
+            if (!user.SalonId.HasValue)
+            {
+                return new ApiResponse<List<BusinessHoursDto>>
+                {
+                    Success = false,
+                    Message = "No salon is associated with this user.",
+                    Data = null
+                };
+            }
+
+            var salonId = user.SalonId.Value;
+
+            var hours = await _context.SalonBusinessHours
+                .Where(x => x.SalonId == salonId)
+                .ToListAsync();
+
+            foreach (var day in Days)
+            {
+                if (!hours.Any(x => x.Day == day))
+                {
+                    var index = Array.IndexOf(Days, day);
+
+                    var newHour = new SalonBusinessHour
+                    {
+                        SalonId = salonId,
+                        Day = day,
+                        IsOpen = index != 6,
+                        OpenTime = TimeSpan.FromHours(9),
+                        CloseTime = TimeSpan.FromHours(20)
+                    };
+
+                    hours.Add(newHour);
+                    _context.SalonBusinessHours.Add(newHour);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            var result = hours
+                .OrderBy(x => Array.IndexOf(Days, x.Day))
+                .Select(x => new BusinessHoursDto
+                {
+                    Day = x.Day,
+                    IsOpen = x.IsOpen,
+                    OpenTime = x.OpenTime.ToString(@"hh\:mm"),
+                    CloseTime = x.CloseTime.ToString(@"hh\:mm")
+                })
+                .ToList();
+
+            return new ApiResponse<List<BusinessHoursDto>>
+            {
+                Success = true,
+                Message = "Business hours fetched successfully.",
+                Data = result
+            };
+        }
+
+        public async Task<ApiResponse<bool>> UpdateBusinessHoursAsync(int userId,List<BusinessHoursDto> hours)
+        {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(x => x.UserId == userId);
+
+            if (user == null)
+            {
+                return new ApiResponse<bool>
+                {
+                    Success = false,
+                    Message = "User not found.",
+                    Data = false
+                };
+            }
+
+            if (!user.SalonId.HasValue)
+            {
+                return new ApiResponse<bool>
+                {
+                    Success = false,
+                    Message = "No salon is associated with this user.",
+                    Data = false
+                };
+            }
+
+            if (hours == null || hours.Count != 7 || hours.Select(x => x.Day).Distinct().Count() != 7 || hours.Any(x => !Days.Contains(x.Day)))
+            {
+                return new ApiResponse<bool>
+                {
+                    Success = false,
+                    Message = "Exactly seven unique weekdays are required.",
+                    Data = false
+                };
+            }
+
+            foreach (var item in hours)
+            {
+                if (!TimeSpan.TryParseExact(
+                        item.OpenTime,
+                        @"hh\:mm",
+                        CultureInfo.InvariantCulture,
+                        out var openTime) ||
+                    !TimeSpan.TryParseExact(
+                        item.CloseTime,
+                        @"hh\:mm",
+                        CultureInfo.InvariantCulture,
+                        out var closeTime))
+                {
+                    return new ApiResponse<bool>
+                    {
+                        Success = false,
+                        Message = $"Invalid time format for {item.Day}.",
+                        Data = false
+                    };
+                }
+
+                if (item.IsOpen && openTime >= closeTime)
+                {
+                    return new ApiResponse<bool>
+                    {
+                        Success = false,
+                        Message = $"Closing time must be after opening time for {item.Day}.",
+                        Data = false
+                    };
+                }
+            }
+
+            var salonId = user.SalonId.Value;
+
+            var existing = await _context.SalonBusinessHours
+                .Where(x => x.SalonId == salonId)
+                .ToListAsync();
+
+            foreach (var item in hours)
+            {
+                var record = existing.FirstOrDefault(x => x.Day == item.Day);
+
+                if (record == null)
+                {
+                    record = new SalonBusinessHour
+                    {
+                        SalonId = salonId,
+                        Day = item.Day
+                    };
+
+                    _context.SalonBusinessHours.Add(record);
+                }
+
+                record.IsOpen = item.IsOpen;
+
+                record.OpenTime = TimeSpan.ParseExact(
+                    item.OpenTime,
+                    @"hh\:mm",
+                    CultureInfo.InvariantCulture);
+
+                record.CloseTime = TimeSpan.ParseExact(
+                    item.CloseTime,
+                    @"hh\:mm",
+                    CultureInfo.InvariantCulture);
+            }
+
+            await _context.SaveChangesAsync();
+
+            return new ApiResponse<bool>
+            {
+                Success = true,
+                Message = "Business hours updated successfully.",
+                Data = true
+            };
+        }
+
+     
         public async Task<ApiResponse<SalonDetailsDto?>> GetMySalonAsync(int userId)
         {
             var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == userId);
@@ -35,11 +224,11 @@ namespace SalonSphere.Infrastructure.Services
                 };
             }
             var salon = await _context.Salons.AsNoTracking().Where(s => s.SalonId == user.SalonId.Value)
-                .Select(s=>new SalonDetailsDto
+                .Select(s => new SalonDetailsDto
                 {
                     SalonId = s.SalonId,
                     SalonName = s.SalonName,
-                    SalonType= s.SalonType,
+                    SalonType = s.SalonType,
                     Description = s.Description,
                     LogoUrl = s.LogoUrl,
                     Phone = s.Phone,
@@ -74,6 +263,7 @@ namespace SalonSphere.Infrastructure.Services
                 Data = salon
             };
         }
+
 
         public async Task<ApiResponse<SalonDetailsDto?>> UpdateSalonAsync(int userId, UpdateSalonReqDto request)
         {
@@ -137,7 +327,7 @@ namespace SalonSphere.Infrastructure.Services
                 Pincode = salon.Pincode,
                 IsActive = salon.IsActive,
                 Website = salon.Website,
-                OwnerName = user.FullName,               
+                OwnerName = user.FullName,
             };
 
             return new ApiResponse<SalonDetailsDto?>

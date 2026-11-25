@@ -60,8 +60,48 @@ namespace SalonSphere.API.Controllers
 
             return Ok(response);
         }
+
+        [HttpGet("business-hours")]
+        public async Task<IActionResult> GetBusinessHours()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (!int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized(new
+                {
+                    Success = false,
+                    Message = "Invalid user authentication."
+                });
+            }
+
+            var response = await _salonService.GetBusinessHoursAsync(userId);
+            if (!response.Success)
+                return BadRequest(response);
+
+            return Ok(response);
+        }
+
+        [HttpPut("business-hours")]
+        public async Task<IActionResult> UpdateBusinessHours([FromBody] List<BusinessHoursDto> hours)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (!int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized(new
+                {
+                    Success = false,
+                    Message = "Invalid user authentication."
+                });
+            }
+
+            var response = await _salonService.UpdateBusinessHoursAsync(userId, hours);
+
+            if (!response.Success)
+                return BadRequest(response);
+            return Ok(response);
+        }
+
     }
-
-
-
 }
