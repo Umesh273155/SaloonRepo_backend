@@ -19,6 +19,66 @@ namespace SalonSphere.Infrastructure.Migrations
                 .HasAnnotation("ProductVersion", "10.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
+            modelBuilder.Entity("SalonSphere.Core.Entities.Appointment", b =>
+                {
+                    b.Property<int>("AppointmentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<DateTime>("AppointmentDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<TimeSpan>("AppointmentTime")
+                        .HasColumnType("time(6)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CustomerName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
+
+                    b.Property<string>("CustomerPhone")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("varchar(15)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<int>("SalonId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StaffId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)")
+                        .HasDefaultValue("Pending");
+
+                    b.HasKey("AppointmentId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.HasIndex("SalonId", "AppointmentDate");
+
+                    b.HasIndex("StaffId", "AppointmentDate", "AppointmentTime");
+
+                    b.ToTable("Appointments", (string)null);
+                });
+
             modelBuilder.Entity("SalonSphere.Core.Entities.AppointmentPreference", b =>
                 {
                     b.Property<int>("AppointmentPreferenceId")
@@ -305,6 +365,185 @@ namespace SalonSphere.Infrastructure.Migrations
                     b.ToTable("SalonNotificationPreferences");
                 });
 
+            modelBuilder.Entity("SalonSphere.Core.Entities.Service", b =>
+                {
+                    b.Property<int>("ServiceId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<int>("DurationMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(true);
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("SalonId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ServiceName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
+
+                    b.HasKey("ServiceId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("SalonId", "IsActive");
+
+                    b.ToTable("Services", (string)null);
+                });
+
+            modelBuilder.Entity("SalonSphere.Core.Entities.ServiceCategory", b =>
+                {
+                    b.Property<int>("CategoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("CategoryName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(true);
+
+                    b.HasKey("CategoryId");
+
+                    b.HasIndex("CategoryName")
+                        .IsUnique();
+
+                    b.ToTable("ServiceCategories", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            CategoryId = 1,
+                            CategoryName = "Hair",
+                            CreatedAt = new DateTime(2026, 11, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Hair cutting, styling and hair treatments",
+                            IsActive = true
+                        },
+                        new
+                        {
+                            CategoryId = 2,
+                            CategoryName = "Skin Care",
+                            CreatedAt = new DateTime(2026, 11, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Facial, cleanup and skincare treatments",
+                            IsActive = true
+                        },
+                        new
+                        {
+                            CategoryId = 3,
+                            CategoryName = "Nail Care",
+                            CreatedAt = new DateTime(2026, 11, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Nail extensions, nail art and nail treatments",
+                            IsActive = true
+                        },
+                        new
+                        {
+                            CategoryId = 4,
+                            CategoryName = "Tattoo",
+                            CreatedAt = new DateTime(2026, 11, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Tattoo designing and tattoo services",
+                            IsActive = true
+                        },
+                        new
+                        {
+                            CategoryId = 5,
+                            CategoryName = "Makeup",
+                            CreatedAt = new DateTime(2026, 11, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Party makeup, bridal makeup and professional makeup",
+                            IsActive = true
+                        },
+                        new
+                        {
+                            CategoryId = 6,
+                            CategoryName = "Waxing",
+                            CreatedAt = new DateTime(2026, 11, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Facial and body waxing services",
+                            IsActive = true
+                        },
+                        new
+                        {
+                            CategoryId = 7,
+                            CategoryName = "Threading",
+                            CreatedAt = new DateTime(2026, 11, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Eyebrow, upper lip and facial threading",
+                            IsActive = true
+                        },
+                        new
+                        {
+                            CategoryId = 8,
+                            CategoryName = "Spa & Massage",
+                            CreatedAt = new DateTime(2026, 11, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Hair spa, body massage and relaxation treatments",
+                            IsActive = true
+                        });
+                });
+
+            modelBuilder.Entity("SalonSphere.Core.Entities.Staff", b =>
+                {
+                    b.Property<int>("StaffId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(15)
+                        .HasColumnType("varchar(15)");
+
+                    b.Property<int>("SalonId")
+                        .HasColumnType("int");
+
+                    b.HasKey("StaffId");
+
+                    b.HasIndex("SalonId");
+
+                    b.ToTable("Staff", (string)null);
+                });
+
             modelBuilder.Entity("SalonSphere.Core.Entities.User", b =>
                 {
                     b.Property<int>("UserId")
@@ -362,6 +601,33 @@ namespace SalonSphere.Infrastructure.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("SalonSphere.Core.Entities.Appointment", b =>
+                {
+                    b.HasOne("SalonSphere.Core.Entities.Salon", "Salon")
+                        .WithMany()
+                        .HasForeignKey("SalonId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SalonSphere.Core.Entities.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SalonSphere.Core.Entities.Staff", "Staff")
+                        .WithMany()
+                        .HasForeignKey("StaffId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Salon");
+
+                    b.Navigation("Service");
+
+                    b.Navigation("Staff");
+                });
+
             modelBuilder.Entity("SalonSphere.Core.Entities.AppointmentPreference", b =>
                 {
                     b.HasOne("SalonSphere.Core.Entities.Salon", "Salon")
@@ -415,6 +681,36 @@ namespace SalonSphere.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SalonSphere.Core.Entities.Service", b =>
+                {
+                    b.HasOne("SalonSphere.Core.Entities.ServiceCategory", "Category")
+                        .WithMany("Services")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SalonSphere.Core.Entities.Salon", "Salon")
+                        .WithMany()
+                        .HasForeignKey("SalonId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Salon");
+                });
+
+            modelBuilder.Entity("SalonSphere.Core.Entities.Staff", b =>
+                {
+                    b.HasOne("SalonSphere.Core.Entities.Salon", "Salon")
+                        .WithMany()
+                        .HasForeignKey("SalonId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Salon");
+                });
+
             modelBuilder.Entity("SalonSphere.Core.Entities.User", b =>
                 {
                     b.HasOne("SalonSphere.Core.Entities.Role", "Role")
@@ -445,6 +741,11 @@ namespace SalonSphere.Infrastructure.Migrations
                     b.Navigation("BusinessHours");
 
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("SalonSphere.Core.Entities.ServiceCategory", b =>
+                {
+                    b.Navigation("Services");
                 });
 #pragma warning restore 612, 618
         }

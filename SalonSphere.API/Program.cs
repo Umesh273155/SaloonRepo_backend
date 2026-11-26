@@ -20,6 +20,7 @@ if (string.IsNullOrWhiteSpace(jwtKey))
 // Add services
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+builder.Services.AddHttpContextAccessor();
 
 // Infrastructure and Database
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -28,6 +29,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISalonService, SalonService>();
 
+builder.Services.AddScoped<ISalonOfferingService, SalonOfferingService>();
 
 // Email Configuration
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));

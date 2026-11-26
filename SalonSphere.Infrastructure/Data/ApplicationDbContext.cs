@@ -20,6 +20,10 @@ namespace SalonSphere.Infrastructure.Data
         public DbSet<SalonBusinessHour> SalonBusinessHours { get; set; }
         public DbSet<AppointmentPreference> AppointmentPreferences => Set<AppointmentPreference>();
         public DbSet<SalonNotificationPreference> SalonNotificationPreferences { get; set; }
+        public DbSet<Staff> StaffMembers => Set<Staff>();
+        public DbSet<Appointment> Appointments => Set<Appointment>();
+        public DbSet<Service> Services { get; set; }
+        public DbSet<ServiceCategory> ServiceCategories => Set<ServiceCategory>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

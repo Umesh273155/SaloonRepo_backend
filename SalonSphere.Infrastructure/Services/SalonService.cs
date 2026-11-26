@@ -501,8 +501,7 @@ namespace SalonSphere.Infrastructure.Services
             };
         }
 
-        public async Task<ApiResponse<NotificationPreferencesResDto?>>
-    GetNotificationPreferencesAsync(int userId)
+        public async Task<ApiResponse<NotificationPreferencesResDto?>>GetNotificationPreferencesAsync(int userId)
         {
             try
             {
