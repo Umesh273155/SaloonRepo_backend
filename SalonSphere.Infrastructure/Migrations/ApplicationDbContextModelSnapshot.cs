@@ -19,6 +19,49 @@ namespace SalonSphere.Infrastructure.Migrations
                 .HasAnnotation("ProductVersion", "10.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
+            modelBuilder.Entity("SalonSphere.Core.Entities.AppointmentPreference", b =>
+                {
+                    b.Property<int>("AppointmentPreferenceId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("AdvanceBookingDays")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AppointmentDuration")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CancellationHours")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("OnlineBooking")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("RequireConfirmation")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("SalonId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TimeZone")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("AppointmentPreferenceId");
+
+                    b.HasIndex("SalonId")
+                        .IsUnique();
+
+                    b.ToTable("AppointmentPreferences");
+                });
+
             modelBuilder.Entity("SalonSphere.Core.Entities.EmailOtp", b =>
                 {
                     b.Property<int>("EmailOtpId")
@@ -230,6 +273,38 @@ namespace SalonSphere.Infrastructure.Migrations
                     b.ToTable("SalonBusinessHours");
                 });
 
+            modelBuilder.Entity("SalonSphere.Core.Entities.SalonNotificationPreference", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<bool>("AppointmentNotifications")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("EmailNotifications")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("PaymentNotifications")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("SalonId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("StockNotifications")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SalonId")
+                        .IsUnique();
+
+                    b.ToTable("SalonNotificationPreferences");
+                });
+
             modelBuilder.Entity("SalonSphere.Core.Entities.User", b =>
                 {
                     b.Property<int>("UserId")
@@ -287,6 +362,17 @@ namespace SalonSphere.Infrastructure.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("SalonSphere.Core.Entities.AppointmentPreference", b =>
+                {
+                    b.HasOne("SalonSphere.Core.Entities.Salon", "Salon")
+                        .WithOne("AppointmentPreference")
+                        .HasForeignKey("SalonSphere.Core.Entities.AppointmentPreference", "SalonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Salon");
+                });
+
             modelBuilder.Entity("SalonSphere.Core.Entities.EmailOtp", b =>
                 {
                     b.HasOne("SalonSphere.Core.Entities.User", "User")
@@ -320,6 +406,15 @@ namespace SalonSphere.Infrastructure.Migrations
                     b.Navigation("Salon");
                 });
 
+            modelBuilder.Entity("SalonSphere.Core.Entities.SalonNotificationPreference", b =>
+                {
+                    b.HasOne("SalonSphere.Core.Entities.Salon", null)
+                        .WithMany()
+                        .HasForeignKey("SalonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("SalonSphere.Core.Entities.User", b =>
                 {
                     b.HasOne("SalonSphere.Core.Entities.Role", "Role")
@@ -345,6 +440,8 @@ namespace SalonSphere.Infrastructure.Migrations
 
             modelBuilder.Entity("SalonSphere.Core.Entities.Salon", b =>
                 {
+                    b.Navigation("AppointmentPreference");
+
                     b.Navigation("BusinessHours");
 
                     b.Navigation("Users");

@@ -337,5 +337,296 @@ namespace SalonSphere.Infrastructure.Services
                 Data = response
             };
         }
+        public async Task<ApiResponse<AppointmentPreferenceDto?>> GetAppointmentPreferencesAsync(int userId)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == userId);
+
+            if (user == null)
+            {
+                return new ApiResponse<AppointmentPreferenceDto?>
+                {
+                    Success = false,
+                    Message = "User not found.",
+                    Data = null
+                };
+            }
+
+            if (!user.SalonId.HasValue)
+            {
+                return new ApiResponse<AppointmentPreferenceDto?>
+                {
+                    Success = false,
+                    Message = "No salon is associated with this user.",
+                    Data = null
+                };
+            }
+
+            var salonId = user.SalonId.Value;
+            var preference = await _context.AppointmentPreferences.FirstOrDefaultAsync(x => x.SalonId == salonId);
+
+            if (preference == null)
+            {
+                preference = new AppointmentPreference
+                {
+                    SalonId = salonId,
+                    AppointmentDuration = 30,
+                    AdvanceBookingDays = 30,
+                    CancellationHours = 2,
+                    TimeZone = "Asia/Kolkata",
+                    OnlineBooking = true,
+                    RequireConfirmation = false,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+
+                _context.AppointmentPreferences.Add(preference);
+
+                await _context.SaveChangesAsync();
+            }
+
+            var result = new AppointmentPreferenceDto
+            {
+                AppointmentPreferenceId = preference.AppointmentPreferenceId,
+                AppointmentDuration = preference.AppointmentDuration,
+                AdvanceBookingDays = preference.AdvanceBookingDays,
+                CancellationHours = preference.CancellationHours,
+                TimeZone = preference.TimeZone,
+                OnlineBooking = preference.OnlineBooking,
+                RequireConfirmation = preference.RequireConfirmation
+            };
+
+            return new ApiResponse<AppointmentPreferenceDto?>
+            {
+                Success = true,
+                Message = "Appointment preferences fetched successfully.",
+                Data = result
+            };
+        }
+
+
+        public async Task<ApiResponse<AppointmentPreferenceDto>> UpdateAppointmentPreferencesAsync(int userId,UpdateAppointmentPreferenceDto request)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == userId);
+
+            if (user == null)
+            {
+                return new ApiResponse<AppointmentPreferenceDto>
+                {
+                    Success = false,
+                    Message = "User not found.",
+                    Data = null
+                };
+            }
+
+            if (!user.SalonId.HasValue)
+            {
+                return new ApiResponse<AppointmentPreferenceDto>
+                {
+                    Success = false,
+                    Message = "No salon is associated with this user.",
+                    Data = null
+                };
+            }
+
+            if (request == null)
+            {
+                return new ApiResponse<AppointmentPreferenceDto>
+                {
+                    Success = false,
+                    Message = "Invalid appointment preferences.",
+                    Data = null
+                };
+            }
+
+            var allowedDurations = new[] { 15, 30, 45, 60, 90 };
+            var allowedBookingDays = new[] { 7, 15, 30, 60, 90 };
+            var allowedCancellationHours = new[] { 1, 2, 6, 12, 24 };
+            var allowedTimeZones = new[]
+            {
+                "Asia/Kolkata",
+                "Asia/Dubai",
+                "Asia/Singapore",
+                "Europe/London"
+            };
+
+            if (!allowedDurations.Contains(request.AppointmentDuration) || !allowedBookingDays.Contains(request.AdvanceBookingDays) || !allowedCancellationHours.Contains(request.CancellationHours) || string.IsNullOrWhiteSpace(request.TimeZone) || !allowedTimeZones.Contains(request.TimeZone))
+            {
+                return new ApiResponse<AppointmentPreferenceDto>
+                {
+                    Success = false,
+                    Message = "Invalid appointment preference values.",
+                    Data = null
+                };
+            }
+
+            var salonId = user.SalonId.Value;
+
+            var preference = await _context.AppointmentPreferences.FirstOrDefaultAsync(x => x.SalonId == salonId);
+
+            if (preference == null)
+            {
+                preference = new AppointmentPreference
+                {
+                    SalonId = salonId,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                _context.AppointmentPreferences.Add(preference);
+            }
+
+            preference.AppointmentDuration = request.AppointmentDuration;
+            preference.AdvanceBookingDays = request.AdvanceBookingDays;
+            preference.CancellationHours = request.CancellationHours;
+            preference.TimeZone = request.TimeZone;
+            preference.OnlineBooking = request.OnlineBooking;
+            preference.RequireConfirmation = request.RequireConfirmation;
+            preference.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+            var result = new AppointmentPreferenceDto
+            {
+                AppointmentPreferenceId = preference.AppointmentPreferenceId,
+                AppointmentDuration = preference.AppointmentDuration,
+                AdvanceBookingDays = preference.AdvanceBookingDays,
+                CancellationHours = preference.CancellationHours,
+                TimeZone = preference.TimeZone,
+                OnlineBooking = preference.OnlineBooking,
+                RequireConfirmation = preference.RequireConfirmation
+            };
+            return new ApiResponse<AppointmentPreferenceDto>
+            {
+                Success = true,
+                Message = "Appointment preferences updated successfully.",
+                Data = result
+            };
+        }
+
+        public async Task<ApiResponse<NotificationPreferencesResDto?>>
+    GetNotificationPreferencesAsync(int userId)
+        {
+            try
+            {
+                var user = await _context.Users
+                    .FirstOrDefaultAsync(x => x.UserId == userId);
+
+                if (user == null)
+                {
+                    return new ApiResponse<NotificationPreferencesResDto?>
+                    {
+                        Success = false,
+                        Message = "User not found",
+                        Data = null
+                    };
+                }
+
+                var preferences = await _context.SalonNotificationPreferences
+                    .FirstOrDefaultAsync(x => x.SalonId == user.SalonId);
+
+                if (preferences == null)
+                {
+                    preferences = new SalonNotificationPreference
+                    {
+                        SalonId = user.SalonId!.Value,
+                        AppointmentNotifications = true,
+                        PaymentNotifications = true,
+                        StockNotifications = true,
+                        EmailNotifications = true,
+                        UpdatedAt = DateTime.UtcNow
+                    };
+
+                    _context.SalonNotificationPreferences.Add(preferences);
+                    await _context.SaveChangesAsync();
+                }
+
+                var response = new NotificationPreferencesResDto
+                {
+                    AppointmentNotifications = preferences.AppointmentNotifications,
+                    PaymentNotifications = preferences.PaymentNotifications,
+                    StockNotifications = preferences.StockNotifications,
+                    EmailNotifications = preferences.EmailNotifications
+                };
+
+                return new ApiResponse<NotificationPreferencesResDto?>
+                {
+                    Success = true,
+                    Message = "Notification preferences fetched successfully",
+                    Data = response
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<NotificationPreferencesResDto?>
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Data = null
+                };
+            }
+        }
+        public async Task<ApiResponse<NotificationPreferencesResDto?>>UpdateNotificationPreferencesAsync(int userId,UpdateNotificationPreferencesReqDto request)
+        {
+            try
+            {
+                var user = await _context.Users
+                    .FirstOrDefaultAsync(x => x.UserId == userId);
+
+                if (user == null)
+                {
+                    return new ApiResponse<NotificationPreferencesResDto?>
+                    {
+                        Success = false,
+                        Message = "User not found",
+                        Data = null
+                    };
+                }
+
+                var preferences = await _context.SalonNotificationPreferences
+                    .FirstOrDefaultAsync(x => x.SalonId == user.SalonId);
+
+                if (preferences == null)
+                {
+                    preferences = new SalonNotificationPreference
+                    {
+                        SalonId = user.SalonId!.Value
+                    };
+
+                    _context.SalonNotificationPreferences.Add(preferences);
+                }
+
+                preferences.AppointmentNotifications = request.AppointmentNotifications;
+                preferences.PaymentNotifications = request.PaymentNotifications;
+                preferences.StockNotifications = request.StockNotifications;
+                preferences.EmailNotifications = request.EmailNotifications;
+                preferences.UpdatedAt = DateTime.UtcNow;
+
+                await _context.SaveChangesAsync();
+
+                var response = new NotificationPreferencesResDto
+                {
+                    AppointmentNotifications = preferences.AppointmentNotifications,
+                    PaymentNotifications = preferences.PaymentNotifications,
+                    StockNotifications = preferences.StockNotifications,
+                    EmailNotifications = preferences.EmailNotifications
+                };
+
+                return new ApiResponse<NotificationPreferencesResDto?>
+                {
+                    Success = true,
+                    Message = "Notification preferences updated successfully",
+                    Data = response
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<NotificationPreferencesResDto?>
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Data = null
+                };
+            }
+        }
+
+
     }
 }

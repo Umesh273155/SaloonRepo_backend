@@ -8,19 +8,18 @@ namespace SalonSphere.Infrastructure.Data
 {
     public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
 
         public DbSet<User> Users => Set<User>();
-
         public DbSet<Salon> Salons => Set<Salon>();
-
         public DbSet<Role> Roles => Set<Role>();
         public DbSet<EmailOtp> EmailOtps => Set<EmailOtp>();
         public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
         public DbSet<SalonBusinessHour> SalonBusinessHours { get; set; }
-
+        public DbSet<AppointmentPreference> AppointmentPreferences => Set<AppointmentPreference>();
+        public DbSet<SalonNotificationPreference> SalonNotificationPreferences { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
