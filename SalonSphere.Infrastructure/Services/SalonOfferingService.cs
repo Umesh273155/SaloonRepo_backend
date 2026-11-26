@@ -46,8 +46,7 @@ namespace SalonSphere.Infrastructure.Services
                 var salonId = await GetSalonIdAsync();
 
                 var category = await _context.ServiceCategories
-                    .FirstOrDefaultAsync(x =>
-                        x.CategoryId == request.CategoryId && x.IsActive);
+                    .FirstOrDefaultAsync(x => x.CategoryId == request.CategoryId && x.IsActive);
 
                 if (category == null)
                 {
@@ -197,8 +196,7 @@ namespace SalonSphere.Infrastructure.Services
                 var service = await _context.Services
                     .AsNoTracking()
                     .Include(x => x.Category)
-                    .FirstOrDefaultAsync(x =>
-                        x.ServiceId == serviceId && x.SalonId == salonId);
+                    .FirstOrDefaultAsync(x => x.ServiceId == serviceId && x.SalonId == salonId);
 
                 if (service == null)
                 {
