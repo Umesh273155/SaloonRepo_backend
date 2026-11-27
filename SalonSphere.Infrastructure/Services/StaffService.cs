@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using SalonSphere.Application.DTOs;
+using SalonSphere.Application.Helper;
 using SalonSphere.Application.Interfaces;
 using SalonSphere.Core.Entities;
 using SalonSphere.Infrastructure.Data;
@@ -126,7 +127,10 @@ namespace SalonSphere.Infrastructure.Services
             staff.FullName = request.FullName.Trim();
             staff.Email = request.Email.Trim();
             staff.Phone = request.Phone.Trim();
-            staff.ProfileImage = request.ProfileImage;
+            if (!string.IsNullOrWhiteSpace(request.ProfileImage))
+            {
+                staff.ProfileImage = request.ProfileImage;
+            }
             staff.DesignationId = request.DesignationId;
             staff.JoiningDate = request.JoiningDate;
             staff.Salary = request.Salary;

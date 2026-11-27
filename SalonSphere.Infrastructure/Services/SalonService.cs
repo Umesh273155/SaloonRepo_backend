@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SalonSphere.Application.DTOs;
+using SalonSphere.Application.Helper;
 using SalonSphere.Application.Interfaces;
 using SalonSphere.Core.Entities;
 using SalonSphere.Infrastructure.Data;

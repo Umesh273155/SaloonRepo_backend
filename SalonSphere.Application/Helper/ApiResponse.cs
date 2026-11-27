@@ -1,6 +1,4 @@
-﻿
-
-namespace SalonSphere.Application.DTOs
+﻿namespace SalonSphere.Application.Helper
 {
     public class ApiResponse<T>
     {

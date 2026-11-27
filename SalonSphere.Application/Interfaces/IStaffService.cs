@@ -1,5 +1,6 @@
 ﻿
 using SalonSphere.Application.DTOs;
+using SalonSphere.Application.Helper;
 
 namespace SalonSphere.Application.Interfaces
 {

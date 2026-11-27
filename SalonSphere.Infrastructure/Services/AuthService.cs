@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SalonSphere.Application.DTOs;
+using SalonSphere.Application.Helper;
 using SalonSphere.Application.Interfaces;
 using SalonSphere.Core.Entities;
 using SalonSphere.Infrastructure.Data;
