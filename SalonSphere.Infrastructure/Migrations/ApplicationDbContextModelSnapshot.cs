@@ -122,6 +122,78 @@ namespace SalonSphere.Infrastructure.Migrations
                     b.ToTable("AppointmentPreferences");
                 });
 
+            modelBuilder.Entity("SalonSphere.Core.Entities.Designation", b =>
+                {
+                    b.Property<int>("DesignationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("DesignationName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.HasKey("DesignationId");
+
+                    b.HasIndex("DesignationName")
+                        .IsUnique();
+
+                    b.ToTable("Designations", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            DesignationId = 1,
+                            DesignationName = "Manager",
+                            IsActive = true
+                        },
+                        new
+                        {
+                            DesignationId = 2,
+                            DesignationName = "Senior Beautician",
+                            IsActive = true
+                        },
+                        new
+                        {
+                            DesignationId = 3,
+                            DesignationName = "Beautician",
+                            IsActive = true
+                        },
+                        new
+                        {
+                            DesignationId = 4,
+                            DesignationName = "Hair Stylist",
+                            IsActive = true
+                        },
+                        new
+                        {
+                            DesignationId = 5,
+                            DesignationName = "Makeup Artist",
+                            IsActive = true
+                        },
+                        new
+                        {
+                            DesignationId = 6,
+                            DesignationName = "Nail Artist",
+                            IsActive = true
+                        },
+                        new
+                        {
+                            DesignationId = 7,
+                            DesignationName = "Receptionist",
+                            IsActive = true
+                        },
+                        new
+                        {
+                            DesignationId = 8,
+                            DesignationName = "Tattoo Artist",
+                            IsActive = true
+                        });
+                });
+
             modelBuilder.Entity("SalonSphere.Core.Entities.EmailOtp", b =>
                 {
                     b.Property<int>("EmailOtpId")
@@ -516,6 +588,9 @@ namespace SalonSphere.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<int>("DesignationId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Email")
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
@@ -530,16 +605,31 @@ namespace SalonSphere.Infrastructure.Migrations
                         .HasColumnType("tinyint(1)")
                         .HasDefaultValue(true);
 
+                    b.Property<DateTime?>("JoiningDate")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<string>("Phone")
                         .HasMaxLength(15)
                         .HasColumnType("varchar(15)");
+
+                    b.Property<string>("ProfileImage")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<decimal>("Salary")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<int>("SalonId")
                         .HasColumnType("int");
 
                     b.HasKey("StaffId");
 
-                    b.HasIndex("SalonId");
+                    b.HasIndex("DesignationId");
+
+                    b.HasIndex("SalonId", "Email");
+
+                    b.HasIndex("SalonId", "Phone");
 
                     b.ToTable("Staff", (string)null);
                 });
@@ -702,11 +792,19 @@ namespace SalonSphere.Infrastructure.Migrations
 
             modelBuilder.Entity("SalonSphere.Core.Entities.Staff", b =>
                 {
+                    b.HasOne("SalonSphere.Core.Entities.Designation", "Designation")
+                        .WithMany("StaffMembers")
+                        .HasForeignKey("DesignationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("SalonSphere.Core.Entities.Salon", "Salon")
                         .WithMany()
                         .HasForeignKey("SalonId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Designation");
 
                     b.Navigation("Salon");
                 });
@@ -727,6 +825,11 @@ namespace SalonSphere.Infrastructure.Migrations
                     b.Navigation("Role");
 
                     b.Navigation("Salon");
+                });
+
+            modelBuilder.Entity("SalonSphere.Core.Entities.Designation", b =>
+                {
+                    b.Navigation("StaffMembers");
                 });
 
             modelBuilder.Entity("SalonSphere.Core.Entities.Role", b =>

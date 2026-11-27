@@ -19,11 +19,13 @@ namespace SalonSphere.Infrastructure.Data
         public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
         public DbSet<SalonBusinessHour> SalonBusinessHours { get; set; }
         public DbSet<AppointmentPreference> AppointmentPreferences => Set<AppointmentPreference>();
-        public DbSet<SalonNotificationPreference> SalonNotificationPreferences { get; set; }
-        public DbSet<Staff> StaffMembers => Set<Staff>();
+        public DbSet<SalonNotificationPreference> SalonNotificationPreferences { get; set; }     
         public DbSet<Appointment> Appointments => Set<Appointment>();
         public DbSet<Service> Services { get; set; }
         public DbSet<ServiceCategory> ServiceCategories => Set<ServiceCategory>();
+        public DbSet<Staff> StaffMembers => Set<Staff>();
+        public DbSet<Designation> Designations { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

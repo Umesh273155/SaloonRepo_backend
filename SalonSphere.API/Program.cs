@@ -30,7 +30,10 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISalonService, SalonService>();
 
 builder.Services.AddScoped<ISalonOfferingService, SalonOfferingService>();
-builder.Services.AddScoped<ICommonService,CommonService>();
+builder.Services.AddScoped<ICommonService, CommonService>();
+builder.Services.AddScoped<IStaffService, StaffService>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+
 
 // Email Configuration
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
@@ -55,8 +58,7 @@ builder.Services
             ValidIssuer = jwtSettings["Issuer"],
             ValidAudience = jwtSettings["Audience"],
 
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwtKey)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
 
             ClockSkew = TimeSpan.Zero
         };
@@ -67,10 +69,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
     {
-        policy
-            .WithOrigins("http://localhost:4200")
-            .AllowAnyHeader()
-            .AllowAnyMethod();
+        policy.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod();
     });
 });
 

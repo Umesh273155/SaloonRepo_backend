@@ -33,5 +33,27 @@ namespace SalonSphere.Infrastructure.Services
                 Data = categories
             };
         }
+
+        // GET DESIGNATIONS
+        public async Task<ApiResponse<IEnumerable<DesignationResDto>>> GetDesignationsAsync()
+        {
+            var designations = await _context.Designations
+                .AsNoTracking()
+                .Where(x => x.IsActive)
+                .OrderBy(x => x.DesignationId)
+                .Select(x => new DesignationResDto
+                {
+                    DesignationId = x.DesignationId,
+                    DesignationName = x.DesignationName
+                })
+                .ToListAsync();
+
+            return new ApiResponse<IEnumerable<DesignationResDto>>
+            {
+                Success = true,
+                Message = "Designations retrieved successfully.",
+                Data = designations
+            };
+        }
     }
 }

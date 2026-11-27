@@ -14,7 +14,7 @@ namespace SalonSphere.API.Controllers
         private readonly ICommonService _commonService;
         public CommonController(ICommonService commonService)
         {
-            _commonService = commonService;            
+            _commonService = commonService;
         }
 
         [HttpGet("servicecategories")]
@@ -40,7 +40,29 @@ namespace SalonSphere.API.Controllers
                 });
             }
         }
-    }
 
+
+        [HttpGet("designations")]
+        public async Task<IActionResult> GetDesignations()
+        {
+            try
+            {
+                var response = await _commonService.GetDesignationsAsync();
+
+                if (!response.Success)
+                    return BadRequest(response);
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Success = false,
+                    Message = ex.Message
+                });
+            }
+        }
+    }
 }
 
