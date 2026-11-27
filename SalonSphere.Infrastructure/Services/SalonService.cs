@@ -201,7 +201,6 @@ namespace SalonSphere.Infrastructure.Services
             };
         }
 
-     
         public async Task<ApiResponse<SalonDetailsDto?>> GetMySalonAsync(int userId)
         {
             var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == userId);
@@ -263,7 +262,6 @@ namespace SalonSphere.Infrastructure.Services
                 Data = salon
             };
         }
-
 
         public async Task<ApiResponse<SalonDetailsDto?>> UpdateSalonAsync(int userId, UpdateSalonReqDto request)
         {
@@ -402,7 +400,6 @@ namespace SalonSphere.Infrastructure.Services
                 Data = result
             };
         }
-
 
         public async Task<ApiResponse<AppointmentPreferenceDto>> UpdateAppointmentPreferencesAsync(int userId,UpdateAppointmentPreferenceDto request)
         {

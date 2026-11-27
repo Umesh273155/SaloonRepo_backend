@@ -30,6 +30,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISalonService, SalonService>();
 
 builder.Services.AddScoped<ISalonOfferingService, SalonOfferingService>();
+builder.Services.AddScoped<ICommonService,CommonService>();
 
 // Email Configuration
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
